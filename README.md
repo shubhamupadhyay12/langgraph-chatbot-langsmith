@@ -1,125 +1,60 @@
-# LangGraph Chatbot
+# LangGraph Chatbot with LangSmith Tracing
 
-A collection of chatbot implementations built with **LangGraph** and **LangChain**.
+Several versions of a chatbot built with **LangGraph** and **LangChain**. Each version adds something to the one before it: conversation memory, tool calling, conditional routing, and LangSmith tracing so every run can be inspected step by step.
 
-The files in this repository are different versions and variations of the same chatbot project. Each version experiments with or improves features such as conversation flow, memory, tool usage, state management, and LangSmith tracing.
+## What it does
 
-## Project Overview
+- Runs a conversation as a LangGraph graph, where each step (call the model, run a tool, decide what happens next) is a node
+- Keeps conversation state and chat history across turns
+- Calls tools when the model asks for them (live calculations, search, external APIs) and feeds the results back into the conversation
+- Routes between nodes with conditional edges
+- Sends every run to LangSmith, so you can see each node, tool call, token count, and latency
 
-This repository was created to learn and demonstrate how chatbots can be built using LangGraph.
+## How a message flows
 
-The chatbot uses a graph-based workflow where each step is represented as a node. LangGraph controls how the chatbot processes user messages, calls the language model, uses tools, stores conversation state, and returns responses.
+1. The user sends a message and it is added to the graph state.
+2. The graph passes the conversation to the language model.
+3. The model either answers directly or requests a tool.
+4. If a tool is requested, it runs and the result goes back to the model.
+5. The updated state is saved and the final answer is returned.
 
-## Features
+## Tech stack
 
-- LLM-powered chatbot
-- LangGraph-based conversation workflow
-- Conversation state management
-- Chat history and memory
-- Tool integration
-- Conditional routing
-- LangSmith tracing and debugging
-- Multiple chatbot versions for learning and experimentation
+Python, LangGraph, LangChain, LangSmith, python-dotenv
 
-## How It Works
-
-A typical chatbot workflow in this repository follows these steps:
-
-1. The user sends a message.
-2. The message is added to the chatbot state.
-3. LangGraph sends the conversation to the language model.
-4. The model generates a response or requests a tool.
-5. Tool results are returned to the graph when required.
-6. The updated conversation state is saved.
-7. The final response is shown to the user.
-
-## Tech Stack
-
-- Python
-- LangGraph
-- LangChain
-- LangSmith
-- Large Language Models
-- Python dotenv
-
-## Getting Started
-
-### 1. Clone the repository
+## Run it
 
 ```bash
-git clone https://github.com/your-username/langgraph-chatbot.git
-cd langgraph-chatbot
-```
+git clone https://github.com/shubhamupadhyay12/langgraph-chatbot-langsmith.git
+cd langgraph-chatbot-langsmith
 
-### 2. Create a virtual environment
-
-```bash
 python -m venv venv
-```
-
-Activate it on Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-Activate it on macOS or Linux:
-
-```bash
-source venv/bin/activate
-```
-
-### 3. Install dependencies
-
-```bash
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
-
-Create a `.env` file in the project folder.
+Create a `.env` file (never commit it):
 
 ```env
 LANGCHAIN_TRACING_V2=true
 LANGCHAIN_API_KEY=your_langsmith_api_key
 LANGCHAIN_PROJECT=langgraph-chatbot
-
-# Add the API key required by the model used in your code
-OPENAI_API_KEY=your_api_key
+OPENAI_API_KEY=your_model_provider_key
 ```
 
-Replace or add environment variables according to the model provider used in the chatbot.
-
-Do not upload the `.env` file or expose API keys publicly.
-
-### 5. Run a chatbot version
+Each file in the repo is a standalone version of the chatbot. Run any one directly, for example:
 
 ```bash
-python chatbot_v1.py
+python langgraph_database_backend.py
 ```
 
-Replace `chatbot_v1.py` with the actual filename you want to run.
+## Tracing with LangSmith
 
-## LangSmith Integration
-
-LangSmith can be used to trace and debug the chatbot workflow.
-
-It helps inspect:
-
-- User inputs
-- Model responses
-- Graph execution
-- Node transitions
-- Tool calls
-- Errors
-- Latency
-- Token usage
-
-## Purpose
-
-The purpose of this repository is to understand LangGraph by building multiple versions of a chatbot and gradually adding more advanced features.
+With tracing on, each run shows up in your LangSmith project. From there you can open a run and check the inputs and outputs of every node, which tool was called with what arguments, how long each step took, and how many tokens were used. This was the main way I debugged multi-step runs.
 
 ## Author
+
+Shubham Upadhyay · [GitHub](https://github.com/shubhamupadhyay12) · [LinkedIn](https://www.linkedin.com/in/shubhamupadhyay25)
 
 **Shubham Upadhyay**
 
